@@ -2,6 +2,7 @@ from typing import Generator, List, Tuple
 import pandas as pd
 import numpy as np
 import os
+import shutil
 import torch
 
 
@@ -64,7 +65,7 @@ def splitDataAndSave(experiment: Experiment, training_size: float, testing_size:
         if state == 'trash':
             continue
         
-        chunk_number = 100
+        chunk_number = SAMPLING_RATE * 4 # 4 seconds
         chunk_size = len(experiment[state]) // chunk_number
         chunks = [experiment[state][i: i+ chunk_size] for i in range(0, len(experiment[state]), chunk_size)]
         np.random.shuffle(chunks)
@@ -139,6 +140,19 @@ def lazy_load_training_data(states: List[str], training_dir: str='training'):
 
         yield prepareXY(training_data)
 
+def load_training_data(states: List[str], training_dir: str='training'):
+    training_filenames = list_files_for_states(training_dir, states)
+    datasets_num = len(training_filenames[states[0]])
+
+    data_list = []
+    for i in range(datasets_num):
+        data_list.append(load_data_for_learning(training_filenames, i))
+
+    training_data = pd.concat(data_list, axis=0)
+    training_data = shuffleData(training_data, SAMPLING_RATE)
+    return prepareXY(training_data)
+
+
 def load_testing_data(states: List[str], testing_dir: str='testing'):
     # read all files at once
     testing_filenames = list_files_for_states(testing_dir, states)    
@@ -148,5 +162,18 @@ def load_testing_data(states: List[str], testing_dir: str='testing'):
     for i in range(datasets_num):
         data_list.append(load_data_for_learning(testing_filenames, i))
 
-    testing_data = pd.concat(data_list, axis=0)
-    return prepareXY(testing_data)
+    training_data = pd.concat(data_list, axis=0)
+    training_data = shuffleData(training_data, SAMPLING_RATE)
+
+    # x = training_data.iloc[:, :len(DATA_COLUMNS)]
+    # y = training_data.iloc[:, len(DATA_COLUMNS):]
+    x, y = prepareXY(training_data)
+    return x, y
+
+def clear_directories(dirs: List[str]):
+    for dir in dirs:
+        if os.path.exists(dir):
+            shutil.rmtree(dir)
+        os.makedirs(dir)
+
+    

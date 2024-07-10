@@ -1,9 +1,11 @@
 #### PATHS ####
-DATASET_PATH = '../FinalBNMDataSets/'
+DATASET_PATH = '../EEG_Datasets/FinalBNMDataSets/'
 
 TRANING_DATA_PATH = './training/'
 TESTING_DATA_PATH = './testing/'
 VALIDATION_DATA_PATH = './validation/'
+
+EXPORTED_MODELS_PATH = './exported_models'
 
 SURVEY_PREFIX = 'Ankieta_'
 DATASET_PREFIX = 'Data_'

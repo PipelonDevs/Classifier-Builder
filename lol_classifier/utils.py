@@ -1,6 +1,8 @@
 import os, shutil, glob
+from typing import Literal
 import pandas as pd
 import numpy as np
+from tabulate import tabulate
 from constants import *
 
 def read_eeg_data(path) -> pd.DataFrame:
@@ -66,6 +68,35 @@ def load_datasets():
     markers = training_data[:, -1]
     kills = len(markers[markers == 0])
     deaths = len(markers[markers == 1])
-    print(f"Number of kills={kills}; deaths={deaths}")
+    neutral = len(markers[markers == 2])
+    print(f"Number of kills={kills}; deaths={deaths}; neutral={neutral}")
    
     return training_data, testing_data
+
+
+def present_confusion_matrix(matrix, labels=STATES):
+    """
+    Present the confusion matrix in a readable table format.
+
+    Parameters:
+    - matrix: list of lists or 2D array, the confusion matrix
+    - labels: list, the class labels
+    """
+    print("Confusion Matrix:")
+    df = pd.DataFrame(matrix, index=[f'Actual: {label}' for label in labels], columns=[f'Predicted: {label}' for label in labels])
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    print(table)
+
+
+def present_metrics(metrics_dict):
+    """
+    Present the metrics dictionary in a readable table format.
+
+    Parameters:
+    - metrics_dict: dict, the metrics dictionary
+    """
+    print("\nClassification Report:")
+    df = pd.DataFrame(metrics_dict).T  # Transpose to have labels as rows
+    df = df.round(3)
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    print(table)

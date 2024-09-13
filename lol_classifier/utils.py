@@ -4,6 +4,7 @@ import pandas as pd
 import numpy as np
 from tabulate import tabulate
 from constants import *
+import mne
 
 def read_eeg_data(path) -> pd.DataFrame:
   df = pd.read_csv(path, low_memory=False, header=None)
@@ -100,3 +101,40 @@ def present_metrics(metrics_dict):
     df = df.round(3)
     table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
     print(table)
+
+def apply_notch_filter(df, sampling_rate, freqs=50.0):
+    """
+    Apply a notch filter to remove specified frequencies from EEG data.
+
+    Parameters:
+    df (pd.DataFrame): The EEG data with channels as columns.
+    sampling_rate (float): The sampling rate of the EEG data.
+    freqs (float or list): The frequency or frequencies to remove (default is 50 Hz).
+
+    Returns:
+    pd.DataFrame: The filtered EEG data.
+    """
+    ch_names = [str(ch) for ch in df.columns]
+    info = mne.create_info(ch_names=ch_names, sfreq=sampling_rate, ch_types="eeg")
+    raw = mne.io.RawArray(df.T.values, info)
+    raw.notch_filter(freqs=freqs)
+    return pd.DataFrame(raw.get_data().T, columns=ch_names)
+
+def apply_bandpass_filter(df, sampling_rate, l_freq, h_freq):
+    """
+    Apply a band-pass filter to EEG data.
+
+    Parameters:
+    df (pd.DataFrame): The EEG data with channels as columns.
+    sampling_rate (float): The sampling rate of the EEG data.
+    l_freq (float): The lower bound of the filter.
+    h_freq (float): The upper bound of the filter.
+
+    Returns:
+    pd.DataFrame: The filtered EEG data.
+    """
+    ch_names = [str(ch) for ch in df.columns]
+    info = mne.create_info(ch_names=ch_names, sfreq=sampling_rate, ch_types="eeg")
+    raw = mne.io.RawArray(df.T.values, info)
+    raw.filter(l_freq=l_freq, h_freq=h_freq)
+    return pd.DataFrame(raw.get_data().T, columns=ch_names)

@@ -97,7 +97,7 @@ def load_data_for_learning(filenames: dict[str, List[str]], iteration) -> pd.Dat
         states = filenames.keys()
         for i, state in enumerate(states):
             data[state] = load_data(filenames[state][iteration])[DATA_COLUMNS]
-            data[state][state] = i + 1
+            data[state][state] = 1
 
         training_data = pd.concat([data[state] for state in states], axis=0)
         training_data.fillna(int(0), inplace=True)
@@ -117,13 +117,10 @@ def load_data_for_states(states: List[str], dir: str='testing'):
 
 def new_load_data(dir: str) -> tuple[np.ndarray, np.ndarray]:
     training_ds = load_data_for_states(STATES, dir)
-    training_ds[STATES[0]] = training_ds[STATES].max(axis=1)
-    training_ds.rename(columns={STATES[0]: 'y'}, inplace=True)
-    training_ds.drop(columns=STATES[1:], inplace=True)
     training_ds = training_ds.sample(frac=1, random_state=42).reset_index(drop=True)
 
-    x, y = training_ds.drop(columns=['y']), training_ds['y']
-    return x.to_numpy(), y.to_numpy()
+    x, y = training_ds.iloc[:, :-len(STATES)], training_ds.iloc[:, -len(STATES):]
+    return x.to_numpy(), y.to_numpy(dtype=np.int32)
 
 def clear_directories(dirs: List[str]):
     print(f"Clearing directories...{dirs}")
@@ -145,7 +142,7 @@ def present_confusion_matrix(matrix, labels=STATES):
     """
     print("Confusion Matrix:")
     df = pd.DataFrame(matrix, index=[f'Actual: {label}' for label in labels], columns=[f'Predicted: {label}' for label in labels])
-    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center') # type: ignore
     print(table)
 
 
@@ -159,5 +156,5 @@ def present_metrics(metrics_dict):
     print("\nClassification Report:")
     df = pd.DataFrame(metrics_dict).T  # Transpose to have labels as rows
     df = df.round(3)
-    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center') # type: ignore
     print(table)

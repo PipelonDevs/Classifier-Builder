@@ -13,7 +13,7 @@ ANNOTAIONS_PREFIX = 'markers-survey-'
 
 #### EXPERIMENT ####
 SAMPLING_RATE = 25 # Hz
-STATES = ['boredom', 'neutral'] # boredom, neutral, flow, frustration
+STATES = ['boredom', 'flow'] # boredom, neutral, flow, frustration
 EXPERIMENT_DURATION = 39.5 * 60 
 # DATA_COLUMNS = [
 #     'alpha channel 1', 'alpha channel 2', 'alpha channel 3', 'alpha channel 4',
@@ -35,4 +35,4 @@ DATA_COLUMNS = [
   'gamma channel 1', 'gamma channel 2', 'gamma channel 3','gamma channel 4'
  ]
 #### TRAINING ####
-TRAINING_SIZE, TESTING_SIZE, VALIDATION_SIZE = 0.8, 0.2, 0.0
+TRAINING_SIZE, TESTING_SIZE, VALIDATION_SIZE = 0.7, 0.2, 0.1

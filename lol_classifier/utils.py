@@ -85,7 +85,7 @@ def present_confusion_matrix(matrix, labels=STATES):
     """
     print("Confusion Matrix:")
     df = pd.DataFrame(matrix, index=[f'Actual: {label}' for label in labels], columns=[f'Predicted: {label}' for label in labels])
-    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center') # type: ignore
     print(table)
 
 
@@ -99,7 +99,7 @@ def present_metrics(metrics_dict):
     print("\nClassification Report:")
     df = pd.DataFrame(metrics_dict).T  # Transpose to have labels as rows
     df = df.round(3)
-    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center')
+    table = tabulate(df, headers='keys', tablefmt='pretty', stralign='center') # type: ignore
     print(table)
 
 def apply_notch_filter(df, sampling_rate, freqs=50.0):

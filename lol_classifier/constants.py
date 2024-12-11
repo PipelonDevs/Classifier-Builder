@@ -1,5 +1,5 @@
 #### PATHS ####
-DATASET_PATH = '/media/jakubner/WINDOWSD1/jakubner/Pipelon/realtime-eeg-experiments/Mind-Collector/data/'
+DATASET_PATH = '/media/jakubner/WINDOWSD/jakubner/Pipelon/realtime-eeg-experiments/Mind-Collector/data/'
 
 TRAINING_DATA_PATH = './training/'
 TESTING_DATA_PATH = './testing/'

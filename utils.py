@@ -115,12 +115,19 @@ def load_data_for_states(states: List[str], dir: str='testing'):
     training_data = pd.concat(data_list, axis=0)
     return training_data 
 
-def new_load_data(dir: str) -> tuple[np.ndarray, np.ndarray]:
+def apply_argmax(y):
+  return np.argmax(y, axis=1)
+
+def new_load_data(dir: str, for_svm=False) -> tuple[np.ndarray, np.ndarray]:
     training_ds = load_data_for_states(STATES, dir)
     training_ds = training_ds.sample(frac=1, random_state=42).reset_index(drop=True)
 
     x, y = training_ds.iloc[:, :-len(STATES)], training_ds.iloc[:, -len(STATES):]
-    return x.to_numpy(), y.to_numpy(dtype=np.int32)
+    y = y.to_numpy(dtype=np.int32)
+    if for_svm:
+        y = apply_argmax(y)
+        
+    return x.to_numpy(), y
 
 def clear_directories(dirs: List[str]):
     print(f"Clearing directories...{dirs}")

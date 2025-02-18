@@ -1,14 +1,27 @@
 import os, shutil, glob
-from typing import Literal
+from typing import List
 import pandas as pd
 import numpy as np
 from tabulate import tabulate
 from constants import *
-import mne
+
+def select_channels(df: pd.DataFrame, channels: List[int] = [1,2,3,4,5,6,7,8]):
+    selected_columns = []
+    for c in channels:
+        selected_columns.append(df.iloc[:, c-1::8])
+    if len(selected_columns) == 0:
+        raise ValueError('No columns selected')
+    return pd.concat(selected_columns, axis=1)
+
+def select_bands(df: pd.DataFrame, bands: slice = slice(16,56)):
+    return df.iloc[:, bands]
 
 def read_eeg_data(path) -> pd.DataFrame:
   df = pd.read_csv(path, low_memory=False, header=None)
-  df = pd.concat([df.iloc[:, 16:56], df.iloc[:, -1].astype(str)], axis=1) # take only alpha, beta, gamma
+  markers = df.iloc[:, -1].astype(str)
+  df = select_bands(df)
+  df = select_channels(df)
+  df = pd.concat([df, markers], axis=1) # take only alpha, beta, gamma
   return df
 
 def propagate_events(x, propagation: list):

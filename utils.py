@@ -26,7 +26,7 @@ def load_data(filename) -> pd.DataFrame:
 def select_bands(df: pd.DataFrame, bands: slice = slice(16,56)):
     return df.iloc[:, bands]
 
-def select_channels(df: pd.DataFrame, channels: List[int] = [1,2,3,4]):
+def select_channels(df: pd.DataFrame, channels: List[int] = [1,2,3,4,5,6,7,8]):
     selected_columns = []
     for c in channels:
         selected_columns.append(df.iloc[:, c-1::8])
